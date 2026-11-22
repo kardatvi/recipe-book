@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Домашняя книга рецептов</title>
+<style>
+:root{color-scheme:light;--paper:#faf8f2;--ink:#252c25;--green:#294b3b;--line:#dfddcf;--white:#fffefa;--muted:#53584d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:1.125rem/1.55 "Segoe UI",Arial,sans-serif}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid #ad4c30;outline-offset:4px}
+[hidden]{display:none!important}
+.wrap{width:min(100% - 48px,1120px);margin:auto}
+header{border-bottom:1px solid var(--line)}
+header .wrap{min-height:76px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-weight:750;text-decoration:none;color:var(--green);display:flex;gap:10px;align-items:center;line-height:1.15}
+.brand svg{flex:none}
+.button{min-height:48px;border-radius:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 16px;border:1px solid transparent;text-decoration:none;line-height:1.2}
+.primary,.tab[aria-pressed=true]{background:var(--green);color:white;box-shadow:0 3px 0 #172d24}
+.primary:hover,.tab[aria-pressed=true]:hover{background:#345d49}
+.secondary,.tab{background:var(--white);color:var(--green);border-color:#a7b3a9;box-shadow:0 3px 0 #e8e6da}
+.secondary:hover,.tab:hover{background:#edf3ea}
+.hero{padding:45px 0 26px}
+h1,h2,p,figure{margin:0}
+h1,h2{font-family:Georgia,serif;letter-spacing:-.035em;line-height:1.1;font-weight:500}
+h1{font-size:clamp(2.5rem,6vw,5rem)}
+.hero p{margin-top:10px;color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;padding-bottom:45px}
+.card{display:flex;flex-direction:column;min-width:0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--white);box-shadow:0 5px 0 #e8e6da}
+.art{background-image:url("art-0.jpg");background-repeat:no-repeat;background-size:300% 100%;aspect-ratio:1.28;background-color:#f2dfaf}
+.art-new{background-image:url("art-1.jpg");background-size:400% 500%;background-color:#faf2e4}
+.category-salad{background:#ebedcf}
+.draft-mark{font-size:1rem;font-weight:700;color:#6b462c}
+.variant{margin-top:28px}
+.variant>h2{font-size:clamp(1.8rem,4vw,2.5rem);margin-bottom:7px}
+.variant>.meta{margin-bottom:12px}
+.detail-links{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px 20px;font-size:1rem}
+.prep-preview{font-size:1rem;color:#5c4b28}
+.art-omelet{background-position:0 50%}
+.art-soup{background-position:50% 50%;background-color:#efcaba}
+.art-meatballs{background-position:100% 50%;background-color:#edc3ba}
+.card-body{display:flex;flex-direction:column;align-items:flex-start;flex:1;gap:11px;padding:18px}
+.category{font-size:.875rem;font-weight:750;border-radius:6px;background:#fae5a3;padding:2px 8px}
+.category-soup{background:#e1ece2}
+.category-main{background:#f3ded5}
+.card h2{font-size:clamp(1.65rem,2.8vw,2.15rem)}
+.meta{font-size:1rem;font-weight:700}
+.ingredients-preview{font-size:1rem;color:var(--muted)}
+.recipe-link{margin-top:auto;width:100%}
+.filters{background:var(--white);border:1px solid var(--line);border-radius:16px;margin-bottom:24px;padding:18px}
+.filter-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:14px}
+label{font-weight:700;display:grid;gap:5px;font-size:1rem;min-width:0}
+input,select{width:100%;min-height:48px;padding:7px 10px;border:1px solid #859082;border-radius:8px;background:white;font-size:1rem}
+.filter-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:15px}
+.empty{padding:12px 0 45px;color:var(--muted)}
+.recipe{padding:24px 0 48px}
+.recipe-intro{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:32px;margin:22px 0 25px}
+.recipe-intro .art{border-radius:15px}
+.recipe-intro h1{font-size:clamp(2.2rem,6vw,4.7rem);margin:.25em 0}
+figcaption{font-size:.875rem;color:var(--muted);margin-top:6px}
+.recipe-columns{display:grid;grid-template-columns:minmax(220px,.72fr) minmax(0,1.5fr);gap:20px;align-items:start}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:clamp(16px,3vw,26px)}
+.panel h2{font-size:2rem;margin-bottom:12px}
+.panel ul,.panel ol{margin:0;padding-inline-start:1.35em}
+.panel li{padding-inline-start:.2em}
+.panel li+li{margin-top:10px}
+.panel ol li::marker{font-weight:800;color:var(--green)}
+.note{margin-bottom:14px;background:#f2eddb;padding:12px;border-radius:10px}
+@media(max-width:840px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:610px){
+.wrap{width:calc(100% - 28px)}
+header .wrap{min-height:68px}
+header .button{font-size:.9rem;padding-inline:9px}
+.brand{font-size:1rem}
+.hero{padding:30px 0 22px}
+nav{gap:8px}
+.tab{padding-inline:12px}
+.grid,.filter-grid,.recipe-intro,.recipe-columns{grid-template-columns:1fr}
+.recipe-intro{gap:16px}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a class="brand" href="#" aria-label="Книга рецептов, к каталогу">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" aria-hidden="true"><path d="M3 5.5h5.5a3.5 3.5 0 0 1 3.5 3.5v11a4 4 0 0 0-3.5-2H3zM21 5.5h-5.5A3.5 3.5 0 0 0 12 9v11a4 4 0 0 1 3.5-2H21z"/></svg>
+    Книга рецептов
+  </a>
+  <button class="button primary" id="filter-toggle" type="button" aria-expanded="false" aria-controls="filters">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+    Поиск и фильтры
+  </button>
+</div></header>
+<main class="wrap">
+  <section id="catalog" aria-labelledby="catalog-title">
+    <div class="hero">
+      <h1 id="catalog-title" tabindex="-1">Что приготовить?</h1>
+      <p>Домашние рецепты с пошаговыми инструкциями</p>
+    </div>
+    <nav aria-label="Категории рецептов">
+      <button class="button tab" data-category="" aria-pressed="true">Все рецепты</button>
+      <button class="button tab" data-category="breakfast" aria-pressed="false">Завтраки</button>
+      <button class="button tab" data-category="soup" aria-pressed="false">Супы</button>
+      <button class="button tab" data-category="main" aria-pressed="false">Горячее</button>
+    </nav>
+    <form class="filters" id="filters" role="search" hidden>
+      <div class="filter-grid">
+        <label>Название<input id="query" type="search" placeholder="Например, омлет"></label>
+        <label>Ингредиент<select id="ingredient"></select></label>
+        <label>Оборудование<select id="equipment"></select></label>
+      </div>
+      <div class="filter-bottom">
+        <output id="match-count" aria-live="polite"></output>
+        <button class="button secondary" type="reset">Сбросить фильтры</button>
+      </div>
+    </form>
+    <div class="grid" id="cards"></div>
+    <p class="empty" id="empty" role="status" hidden>Рецептов с таким сочетанием нет. Измени фильтры или выбери другую категорию.</p>
+  </section>
+  <article class="recipe" id="recipe" hidden></article>
+  <noscript>Для просмотра каталога и рецептов включи JavaScript.</noscript>
+</main>
+<script>
+const originalRecipes = [
+  {
+    id: 'omelet', title: 'Омлет в аэрогриле', category: 'breakfast', art: 'omelet',
+    equipment: 'Аэрогриль', time: '10–12 мин в аэрогриле', cover: 'Яйца, молоко, сыр',
+    tags: ['Яйца', 'Молоко', 'Сыр', 'Овощи', 'Курица', 'Масло', 'Соль'],
+    ingredients: ['Яйца — 2 шт.', 'Молоко — 50 мл', 'Соль и масло для формы', 'Сыр для посыпки', 'По желанию — овощи или курица'],
+    prep: 'Возьми форму для запекания. Слой смеси должен быть не выше 4 см. Аэрогриль заранее разогревать не нужно.',
+    steps: [
+      'Смажь форму маслом. Прямо в форме взбей вилкой яйца, молоко и соль до однородности, около 30 секунд.',
+      'Если используешь начинку, добавь её и перемешай.',
+      'Готовь в аэрогриле 8 минут при 160 °C.',
+      'Открой аэрогриль, посыпь омлет сыром и готовь ещё 2–4 минуты, пока центр не перестанет дрожать, а сыр не расплавится.',
+      'Вынь форму прихваткой. Через минуту омлет может немного осесть.'
+    ]
+  },
+  {
+    id: 'ukha', title: 'Уха из красной рыбы', category: 'soup', art: 'soup',
+    equipment: 'Кастрюля', time: '20–25 мин после закипания', cover: 'Красная рыба, картофель, помидор, укроп',
+    tags: ['Красная рыба', 'Картофель', 'Лук', 'Помидоры', 'Укроп'],
+    ingredients: ['Красная рыба', 'Картофель', 'Лук', 'Помидор', 'Укроп', 'Вода — до уровня рыбы'],
+    steps: [
+      'На дно кастрюли положи картофель, затем мелко нарезанный лук и нарезанный помидор.',
+      'Добавь укроп и положи рыбу сверху.',
+      'Налей воду так, чтобы она покрывала рыбу.',
+      'Доведи до кипения и вари 20–25 минут после закипания. В исходном рецепте ориентир — готовность рыбьей головы.'
+    ]
+  },
+  {
+    id: 'meatballs', title: 'Тефтели в томатном соусе', category: 'main', art: 'meatballs',
+    equipment: 'Мультиварка', time: '40 мин на тушении', cover: 'Фарш, помидоры, морковь, лук',
+    tags: ['Фарш', 'Помидоры', 'Пассата', 'Морковь', 'Лук', 'Чеснок', 'Соль', 'Перец'],
+    ingredients: ['Фарш', 'Помидоры — 2 шт., или пассата', 'Морковь', 'Лук', 'Чеснок', 'Соль и перец', 'Горячая вода — чтобы покрыть тефтели'],
+    steps: [
+      'Натри морковь, мелко нарежь лук и чеснок. Сложи в чашу мультиварки вместе с помидорами или пассатой.',
+      'Посоли и поперчи фарш. Скатай тефтели диаметром около 4 см.',
+      'Выложи тефтели в соус. Долей горячей воды, чтобы она покрыла их целиком.',
+      'Включи режим «Тушение» примерно на 40 минут.',
+      'Подавай с любым гарниром.'
+    ]
+  }
+];
+
+const recipes = [
+{
+  "id": "sushi-sandwich",
+  "title": "Суши-сэндвич",
+  "category": "breakfast",
+  "tile": 0,
+  "equipment": [],
+  "time": "Время сборки не указано",
+  "cover": "Нори, рис, овощи, рыба или курица",
+  "tags": [
+    "Нори",
+    "Рис",
+    "Огурцы",
+    "Морковь",
+    "Сыр",
+    "Рыба",
+    "Курица"
+  ],
+  "ingredients": [
+    "Большой квадратный лист нори",
+    "Круглозёрный рис",
+    "Огурец или морковь",
+    "Сыр, можно ломтиками",
+    "Рыба или курица"
+  ],
+  "steps": [
+    "Сделай надрез в листе нори.",
+    "Разложи по листу рис, овощи, сыр и рыбу или курицу. Начинку можно менять.",
+    "Сложи лист с начинкой в сэндвич."
+  ],
+  "prep": "Накануне свари круглозёрный рис. Он должен быть достаточно клейким."
+},
+{ ...originalRecipes.find((recipe) => recipe.id === 'omelet') },
+{
+  "id": "macaroni-cheese",
+  "title": "Макароны с сыром",
+  "category": "breakfast",
+  "tile": 1,
+  "equipment": [
+    "Микроволновка"
+  ],
+  "time": "Время разогрева не указано",
+  "cover": "Макароны, сыр",
+  "tags": [
+    "Макароны",
+    "Сыр"
+  ],
+  "ingredients": [
+    "Готовые макароны",
+    "Тёртый сыр"
+  ],
+  "steps": [
+    "Посыпь макароны тёртым сыром.",
+    "Разогрей в микроволновке."
+  ],
+  "prep": "Свари макароны накануне."
+},
+{
+  "id": "syrniki",
+  "title": "Сырники с вишнёвым соусом",
+  "category": "breakfast",
+  "tile": 2,
+  "equipment": [
+    "Аэрогриль",
+    "Сотейник"
+  ],
+  "time": "15–20 мин в аэрогриле",
+  "cover": "Сырники, вишня, сметана",
+  "tags": [
+    "Сырники",
+    "Вишня",
+    "Сахар",
+    "Корица",
+    "Сметана"
+  ],
+  "ingredients": [
+    "Готовые сырники для приготовления",
+    "Замороженная вишня",
+    "Вода слоем 2 см в сотейнике",
+    "Щепотка сахара",
+    "Корица по желанию",
+    "Сметана для подачи"
+  ],
+  "steps": [
+    "Выложи сырники на пергамент и готовь 15–20 минут при 180 °C. Через 10 минут переверни.",
+    "Пока сырники готовятся, положи замороженную вишню в сотейник и налей воду слоем около 2 см.",
+    "Доведи до кипения, разомни ягоды ложкой, добавь щепотку сахара и по желанию корицу.",
+    "Помешивай, пока вишня полностью не разморозится. Подавай со сметаной и соусом."
+  ]
+},
+{
+  "id": "boiled-eggs",
+  "title": "Варёные яйца",
+  "category": "breakfast",
+  "tile": 3,
+  "equipment": [
+    "Сотейник"
+  ],
+  "time": "7 мин после закипания",
+  "cover": "Яйца",
+  "tags": [
+    "Яйца",
+    "Соль"
+  ],
+  "ingredients": [
+    "Яйца — 2 шт. или больше, если помещаются в один слой",
+    "Вода, чтобы покрыть яйца",
+    "Соль"
+  ],
+  "steps": [
+    "Положи яйца в сотейник в один слой. Залей водой, чтобы она покрывала яйца, и посоли.",
+    "Доведи до кипения и поставь таймер на 7 минут.",
+    "Сними сотейник с плиты и залей яйца холодной водой, чтобы они легче чистились."
+  ]
+},
+{
+  "id": "chicken-fillet",
+  "title": "Куриное филе в аэрогриле для бутербродов",
+  "category": "breakfast",
+  "tile": 4,
+  "equipment": [
+    "Аэрогриль"
+  ],
+  "time": "15 мин на режиме «Курица»",
+  "cover": "Куриное филе, яйцо, специи",
+  "tags": [
+    "Курица",
+    "Яйца",
+    "Соевый соус",
+    "Чеснок",
+    "Соль",
+    "Специи"
+  ],
+  "ingredients": [
+    "Куриное филе",
+    "Яйцо — 1 шт.",
+    "Специи по вкусу, например чили с солью или смесь томата и чеснока",
+    "Соевый соус — 1 ч. л., по желанию"
+  ],
+  "steps": [
+    "Положи целые куски филе в миску. Добавь яйцо, специи и по желанию соевый соус. Перемешай.",
+    "Переложи филе в чашу аэрогриля. Оставшийся маринад выброси.",
+    "Готовь 15 минут на режиме «Курица».",
+    "Заверни приготовленное филе в фольгу порциями. После остывания убери в холодильник."
+  ],
+  "safety": "Проверь термометром, что внутри филе не меньше 74 °C."
+},
+{
+  "id": "chicken-sandwich",
+  "title": "Бутерброды с куриным филе",
+  "category": "breakfast",
+  "tile": 5,
+  "equipment": [],
+  "time": "Время сборки не указано",
+  "cover": "Хлеб, куриное филе, творожный сыр",
+  "tags": [
+    "Хлеб",
+    "Курица",
+    "Творожный сыр",
+    "Огурцы",
+    "Помидоры",
+    "Сыр"
+  ],
+  "ingredients": [
+    "Хлеб",
+    "Готовое куриное филе",
+    "Творожный сыр",
+    "Огурец или помидор",
+    "Сыр по желанию"
+  ],
+  "steps": [
+    "Нарежь готовое куриное филе и овощи.",
+    "Намажь хлеб творожным сыром, положи филе и овощи. По желанию добавь ломтик сыра."
+  ],
+  "related": [
+    "chicken-fillet",
+    "Как приготовить филе для бутербродов"
+  ]
+},
+{
+  "id": "tuna-sandwich",
+  "title": "Бутерброды с тунцом",
+  "category": "breakfast",
+  "tile": 6,
+  "equipment": [],
+  "time": "Черновик",
+  "cover": "Тунец",
+  "tags": [
+    "Тунец"
+  ],
+  "ingredients": [],
+  "steps": [],
+  "draft": true,
+  "gap": "В документе есть название и пометка «Напишу позже». Список продуктов и шаги ещё не добавлены."
+},
+{ ...originalRecipes.find((recipe) => recipe.id === 'ukha') },
+{
+  "id": "fish-with-vegetables",
+  "title": "Рыба с овощами в аэрогриле",
+  "category": "main",
+  "tile": 7,
+  "equipment": [
+    "Аэрогриль"
+  ],
+  "time": "Время не указано",
+  "cover": "Рыба, овощи, специи",
+  "tags": [
+    "Рыба",
+    "Овощи",
+    "Специи"
+  ],
+  "ingredients": [
+    "Рыба",
+    "Овощи",
+    "Специи"
+  ],
+  "steps": [
+    "Выложи овощи в чашу аэрогриля и приправь.",
+    "Положи рыбу сверху и добавь специи."
+  ],
+  "gap": "В документе указано оборудование, но нет режима, времени или температуры."
+},
+{
+  "id": "tomato-chicken-pasta",
+  "title": "Томатная паста с куриным филе",
+  "category": "main",
+  "tile": 8,
+  "equipment": [
+    "Сковорода",
+    "Кастрюля"
+  ],
+  "time": "Макароны — по упаковке",
+  "cover": "Макароны, курица, помидоры",
+  "tags": [
+    "Макароны",
+    "Курица",
+    "Лук",
+    "Морковь",
+    "Помидоры",
+    "Масло",
+    "Соль",
+    "Перец",
+    "Чеснок"
+  ],
+  "ingredients": [
+    "Макароны",
+    "Куриное филе, готовое или сырое",
+    "Лук, морковь, помидоры",
+    "Подсолнечное масло",
+    "Соль и перец или смесь с сушёным чесноком"
+  ],
+  "steps": [
+    "Нарежь лук, морковь и помидоры. Налей масло на сковороду.",
+    "С готовым филе сначала готовь овощи, затем добавь нарезанную курицу. С сырым филе сначала нарежь и начни готовить курицу, потом добавь овощи.",
+    "Приправь соус. Если в смеси уже есть соль, отдельно солить не нужно. Если соусу не хватает жидкости, понемногу добавь воды.",
+    "Доведи подсоленную воду до кипения и свари макароны по инструкции на упаковке."
+  ],
+  "prep": "Если используешь замороженное сырое филе, разморозь его заранее.",
+  "related": [
+    "chicken-fillet",
+    "Как приготовить филе заранее"
+  ],
+  "safety": "Если используешь сырое филе, проверь термометром, что внутри кусочков курицы не меньше 74 °C."
+},
+{
+  "id": "buckwheat-mushrooms",
+  "title": "Гречка с грибами",
+  "category": "main",
+  "tile": 9,
+  "equipment": [
+    "Сковорода",
+    "Кастрюля"
+  ],
+  "time": "Два способа приготовления",
+  "cover": "Гречка, грибы, лук",
+  "tags": [
+    "Гречка",
+    "Грибы",
+    "Лук",
+    "Масло",
+    "Соль",
+    "Перец"
+  ],
+  "ingredients": [],
+  "steps": [],
+  "variants": [
+    {
+      "title": "Всё в одной сковороде",
+      "equipment": [
+        "Сковорода"
+      ],
+      "ingredients": [
+        "Грибы — 4–5 шт.",
+        "Лук — 1 головка",
+        "Гречка — 2–3 пакетика",
+        "Подсолнечное масло, соль и перец",
+        "Горячая вода"
+      ],
+      "steps": [
+        "Вымой грибы и нарежь пластинками. Мелко нарежь лук.",
+        "Разогрей масло в большой сковороде на 9. Выложи лук, затем грибы. Посоли, поперчи и обжаривай пару минут, помешивая.",
+        "Всыпь гречку и перемешай. В сковороде должно оставаться место. Влей горячую воду на 1 см выше гречки.",
+        "Накрой крышкой, убавь нагрев до 5–6 и готовь до мягкости гречки. Если она ещё твёрдая, долей воды до её уровня и дождись, пока вода уйдёт."
+      ]
+    },
+    {
+      "title": "Гречка и грибы отдельно",
+      "equipment": [
+        "Кастрюля",
+        "Сковорода"
+      ],
+      "ingredients": [
+        "Гречка",
+        "Свежие грибы, например вешенки",
+        "Репчатый лук",
+        "Масло, соль и по желанию чёрный перец"
+      ],
+      "steps": [
+        "Свари гречку отдельно.",
+        "Вымой, отожми и нарежь грибы. Поставь их жариться на небольшом количестве масла.",
+        "Мелко нарежь лук, добавь к грибам и жарь 5–7 минут, помешивая. Ориентируйся на готовность лука или аромат жареных грибов. Посоли и по желанию поперчи.",
+        "Смешай готовую гречку с грибами и луком."
+      ]
+    }
+  ]
+},
+{
+  "id": "roast-chicken",
+  "title": "Курица в духовке",
+  "category": "main",
+  "tile": 10,
+  "equipment": [
+    "Духовка"
+  ],
+  "time": "70–75 мин в духовке",
+  "cover": "Целая курица, лимон или апельсин",
+  "tags": [
+    "Курица",
+    "Лимон",
+    "Апельсин",
+    "Соевый соус",
+    "Соль",
+    "Перец",
+    "Специи"
+  ],
+  "ingredients": [
+    "Целая курица — 1 шт.",
+    "Половина лимона или апельсина",
+    "Соевый соус",
+    "Соль, перец, чили или другие специи по вкусу"
+  ],
+  "steps": [
+    "Разогрей духовку до 200 °C. Положи курицу в форму.",
+    "Разрежь половину цитруса на четыре части. Выдави немного сока на курицу и положи дольки внутрь.",
+    "Полей курицу соевым соусом, посыпь специями и натри со всех сторон. Подверни кончики крыльев, чтобы они не подгорели.",
+    "Запекай 10–15 минут при 200 °C, затем ещё 60 минут при 180 °C."
+  ],
+  "gap": "В документе продолжительность дана как ориентир. Вес курицы не указан.",
+  "safety": "Проверь пищевым термометром, что внутри птицы не меньше 74 °C."
+},
+{
+  "id": "goulash",
+  "title": "Гуляш",
+  "category": "main",
+  "tile": 11,
+  "equipment": [
+    "Кастрюля"
+  ],
+  "time": "10–15 мин обжаривания и от 20 мин тушения",
+  "cover": "Говядина, лук, морковь, сладкий перец",
+  "tags": [
+    "Говядина",
+    "Лук",
+    "Чеснок",
+    "Морковь",
+    "Помидоры",
+    "Болгарский перец",
+    "Масло",
+    "Соль",
+    "Перец",
+    "Паприка",
+    "Кетчуп",
+    "Зелень"
+  ],
+  "ingredients": [
+    "Говядина для гуляша — 0,5–0,7 кг",
+    "Лук — 1 крупная головка",
+    "Чеснок — половина головки",
+    "Морковь — 1 крупная",
+    "Помидоры — 2–3 шт.",
+    "Болгарский перец — 1 шт.",
+    "Подсолнечное масло, соль и перец",
+    "Паприка, кетчуп и зелень по желанию",
+    "Горячая вода по необходимости"
+  ],
+  "steps": [
+    "Достань продукты, очисти лук, чеснок и морковь. Разогрей кастрюлю с маслом на сильном огне.",
+    "Выложи говядину, обжарь, помешивая, посоли и поперчи. Поставь таймер на 15 минут.",
+    "Нарезай и добавляй по очереди лук, морковь, болгарский перец и помидоры. Если мясо начинает прилипать, влей немного воды и перемешай.",
+    "Когда мясо готовится уже 10–15 минут, оцени количество жидкости. При необходимости долей горячей воды примерно до половины объёма мяса. Поправь вкус солью, перцем или парой ложек кетчупа.",
+    "Накрой крышкой и туши на среднем огне 20 минут. Затем проверь мягкость мяса. Если оно ещё жёсткое, долей воды и туши ещё 20 минут. При необходимости повтори.",
+    "Подавай с гарниром и соусом. По желанию посыпь зеленью."
+  ],
+  "gap": "Чеснок и паприка перечислены в ингредиентах, а момент добавления в документе не указан."
+},
+{
+  "id": "eggplant",
+  "title": "Баклажаны в аэрогриле",
+  "category": "main",
+  "tile": 12,
+  "equipment": [
+    "Аэрогриль"
+  ],
+  "time": "Время не указано",
+  "cover": "Баклажан, помидор, сметана",
+  "tags": [
+    "Баклажаны",
+    "Помидоры",
+    "Сметана"
+  ],
+  "ingredients": [
+    "Баклажан",
+    "Помидор для соуса",
+    "Сметана для соуса"
+  ],
+  "steps": [
+    "Для соуса приготовь помидор в аэрогриле, затем разомни его со сметаной."
+  ],
+  "gap": "В документе есть заметка о слабом маринаде и удачном соусе. Состав маринада, шаги для баклажанов, время и температура в тексте не указаны."
+},
+{
+  "id": "zucchini-fritters",
+  "title": "Кабачковые оладьи в аэрогриле",
+  "category": "main",
+  "tile": 13,
+  "equipment": [
+    "Аэрогриль"
+  ],
+  "time": "10 мин ожидания и 15–17 мин в аэрогриле",
+  "cover": "Кабачки, яйцо, мука",
+  "tags": [
+    "Кабачки",
+    "Яйца",
+    "Мука",
+    "Соль",
+    "Перец",
+    "Зелень",
+    "Сыр",
+    "Чеснок",
+    "Сметана",
+    "Помидоры"
+  ],
+  "ingredients": [
+    "Молодые кабачки — 2 шт.",
+    "Яйцо — 1 шт.",
+    "Мука — 3–4 ст. л., при необходимости ещё 1 ст. л.",
+    "Соль и перец",
+    "Зелень, тёртый сыр или приправа с чесноком по желанию",
+    "Сметана или соус из помидора и сметаны для подачи"
+  ],
+  "steps": [
+    "Натри кабачки крупно, посоли и оставь на 10 минут. Затем отожми или откинь на дуршлаг.",
+    "Добавь яйцо, муку, перец и по желанию зелень, сыр или приправу. Если смесь слишком жидкая, вмешай ещё ложку муки.",
+    "Столовой ложкой выложи оладьи на пергамент в чаше аэрогриля.",
+    "Готовь при 180 °C 10 минут. Переверни и готовь ещё 5–7 минут, при желании дольше для корочки.",
+    "Подавай со сметаной или соусом."
+  ],
+  "related": [
+    "eggplant",
+    "Как приготовить соус из помидора и сметаны"
+  ]
+},
+{
+  "id": "stuffed-zucchini",
+  "title": "Кабачковые шайбы с фаршем",
+  "category": "main",
+  "tile": 14,
+  "equipment": [
+    "Аэрогриль"
+  ],
+  "time": "25 мин в аэрогриле",
+  "cover": "Кабачки, фарш, яйцо, сыр",
+  "tags": [
+    "Кабачки",
+    "Фарш",
+    "Яйца",
+    "Сыр",
+    "Специи"
+  ],
+  "ingredients": [
+    "Крупные кабачки",
+    "Фарш",
+    "Яйцо",
+    "Специи",
+    "Сыр для посыпки"
+  ],
+  "steps": [
+    "Нарежь кабачки шайбами высотой 3–4 см. Если мешают семечки, удали сердцевину.",
+    "Смешай фарш с яйцом и специями. Скатай шарики под размер шайб и уложи их в кабачки. Фарш должен выступать примерно на 1 см или меньше.",
+    "Готовь 20 минут при 180 °C. Посыпь сыром и готовь ещё 5 минут."
+  ],
+  "safety": "Проверь температуру в центре начинки. Для фарша из мяса ориентир 71 °C, для фарша из птицы — 74 °C."
+},
+{
+  "id": "chili",
+  "title": "Чили кон карне",
+  "category": "main",
+  "tile": 15,
+  "equipment": [
+    "Сковорода"
+  ],
+  "time": "15 мин тушения фарша, затем овощи",
+  "cover": "Фарш, фасоль, помидоры, кукуруза",
+  "tags": [
+    "Фарш",
+    "Фасоль",
+    "Помидоры",
+    "Кукуруза",
+    "Лук",
+    "Чеснок",
+    "Морковь",
+    "Соль",
+    "Перец"
+  ],
+  "ingredients": [
+    "Фарш",
+    "Помидоры",
+    "Фасоль — 1 банка",
+    "Кукуруза — небольшая банка или по вкусу",
+    "Репчатый лук и чеснок",
+    "Морковь по желанию",
+    "Соль и перец"
+  ],
+  "steps": [
+    "Нарежь помидоры кубиками, измельчи лук и чеснок. Открой фасоль и кукурузу, слей жидкость с фасоли.",
+    "В глубокой сковороде обжарь фарш, разбивая комки лопаткой. Посоли, поперчи и потуши около 15 минут.",
+    "Добавь лук, чеснок, фасоль, помидоры и кукурузу. Готовь до мягкости лука, оставив часть жидкости в соусе."
+  ],
+  "gap": "Морковь указана как необязательная. Момент добавления в документе не уточнён.",
+  "safety": "Проверь температуру фарша. Для фарша из мяса ориентир 71 °C, для фарша из птицы — 74 °C."
+},
+{ ...originalRecipes.find((recipe) => recipe.id === 'meatballs'), safety: "Проверь температуру в центре тефтели. Для фарша из мяса ориентир 71 °C, для фарша из птицы — 74 °C." },
+{
+  "id": "ratatouille",
+  "title": "Рататуй в мультиварке",
+  "category": "main",
+  "tile": 16,
+  "equipment": [
+    "Мультиварка"
+  ],
+  "time": "Около 30 мин в мультиварке",
+  "cover": "Баклажан, кабачок, помидоры",
+  "tags": [
+    "Баклажаны",
+    "Кабачки",
+    "Помидоры",
+    "Лук",
+    "Чеснок",
+    "Томатная паста",
+    "Масло",
+    "Соль",
+    "Перец"
+  ],
+  "ingredients": [
+    "Баклажан, кабачок и помидоры",
+    "Лук и чеснок",
+    "Оливковое масло, соль и перец",
+    "Ложка томатной пасты по желанию",
+    "Холодная вода для баклажана"
+  ],
+  "steps": [
+    "Нарежь баклажан кольцами и залей холодной водой. Дай постоять, чтобы уменьшить горечь.",
+    "Мелко нарежь лук и чеснок. Нарежь кабачок и помидоры кольцами.",
+    "Положи лук и чеснок на дно чаши. При желании добавь томатную пасту.",
+    "Достань баклажаны из воды. Выложи кольца овощей, полей оливковым маслом, посоли и поперчи.",
+    "Готовь в мультиварке около 30 минут."
+  ],
+  "gap": "Режим мультиварки в документе не указан."
+},
+{
+  "id": "stuffed-peppers",
+  "title": "Фаршированные перцы",
+  "category": "main",
+  "tile": 17,
+  "equipment": [
+    "Мультиварка",
+    "Сковорода",
+    "Кастрюля"
+  ],
+  "time": "45 мин на тушении",
+  "cover": "Перец, фарш, рис, морковь",
+  "tags": [
+    "Болгарский перец",
+    "Фарш",
+    "Рис",
+    "Лук",
+    "Чеснок",
+    "Морковь",
+    "Пассата",
+    "Помидоры",
+    "Зелень"
+  ],
+  "ingredients": [
+    "Перцы — столько, сколько можно поставить в чашу",
+    "Рис — примерно на 2–3 порции гарнира",
+    "Фарш",
+    "Лук, чеснок и морковь",
+    "Пассата или пара помидоров по желанию",
+    "Петрушка или укроп по желанию",
+    "Горячая вода"
+  ],
+  "steps": [
+    "Свари рис до полуготовности, ориентируясь на половину времени с упаковки. Выложи на плоскую тарелку, чтобы он остыл.",
+    "Вымой перцы. Срежь шапочки и удали семена.",
+    "Мелко нарежь лук и чеснок, натри морковь. Обжарь овощи на сковороде.",
+    "Смешай рис, овощи и фарш. По желанию добавь зелень. Наполни перцы.",
+    "Поставь перцы в чашу мультиварки. По желанию добавь пассату или нарезанные помидоры. Влей горячую воду на половину или две трети высоты перцев.",
+    "Готовь 45 минут на режиме «Тушение»."
+  ],
+  "safety": "Проверь температуру в центре начинки. Для фарша из мяса ориентир 71 °C, для фарша из птицы — 74 °C."
+},
+{
+  "id": "cabbage-salad",
+  "title": "Салат с капустой, морковью и кукурузой",
+  "category": "salad",
+  "tile": 18,
+  "equipment": [],
+  "time": "Черновик",
+  "cover": "Капуста, морковь, кукуруза",
+  "tags": [
+    "Капуста",
+    "Морковь",
+    "Кукуруза"
+  ],
+  "ingredients": [],
+  "steps": [],
+  "draft": true,
+  "gap": "В документе есть название и пометка «Напишу позже». Количества, заправка и шаги ещё не добавлены."
+}
+].filter((recipe) => !recipe.draft).map((recipe) => ({
+  ...recipe,
+  equipment: typeof recipe.equipment === 'string' ? [recipe.equipment] : recipe.equipment
+}));
+
+const categories = { breakfast: 'Завтраки', soup: 'Супы', main: 'Горячее', salad: 'Салаты' };
+const safetyUrl = 'https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures';
+
+function meta(recipe) {
+  return [...recipe.equipment, recipe.time].join(' · ');
+}
+const byId = (id) => document.getElementById(id);
+const catalog = byId('catalog');
+const recipeView = byId('recipe');
+const filters = byId('filters');
+const filterToggle = byId('filter-toggle');
+const query = byId('query');
+const ingredient = byId('ingredient');
+const equipment = byId('equipment');
+const tabs = [...document.querySelectorAll('[data-category]')];
+let category = '';
+let openedRecipe = '';
+
+function append(parent, tag, text = '', className = '') {
+  const element = document.createElement(tag);
+  if (text) element.textContent = text;
+  if (className) element.className = className;
+  parent.append(element);
+  return element;
+}
+
+function populate(select, label, values) {
+  select.add(new Option(label, ''));
+  for (const value of [...new Set(values)].sort((a, b) => a.localeCompare(b, 'ru'))) {
+    select.add(new Option(value, value));
+  }
+}
+
+function normalize(text) {
+  return text.toLocaleLowerCase('ru').replaceAll('ё', 'е');
+}
+
+function drawArt(parent, recipe) {
+  const hasTile = Number.isInteger(recipe.tile);
+  const art = append(parent, 'div', '', hasTile ? 'art art-new' : 'art art-' + recipe.art);
+  if (hasTile) {
+    const column = recipe.tile % 4;
+    const row = Math.floor(recipe.tile / 4);
+    art.style.backgroundPosition = (column * 100 / 3) + '% ' + (row * 25) + '%';
+  }
+  art.setAttribute('role', 'img');
+  art.setAttribute('aria-label', 'Набросок блюда «' + recipe.title + '»');
+}
+
+function renderCatalog() {
+  const words = normalize(query.value).trim().split(/\s+/).filter(Boolean);
+  const matches = recipes.filter((recipe) =>
+    (!category || recipe.category === category) &&
+    words.every((word) => normalize(recipe.title).includes(word)) &&
+    (!ingredient.value || recipe.tags.includes(ingredient.value)) &&
+    (!equipment.value || recipe.equipment.includes(equipment.value))
+  );
+  const grid = byId('cards');
+  grid.replaceChildren();
+  for (const recipe of matches) {
+    const card = append(grid, 'article', '', 'card');
+    drawArt(card, recipe);
+    const body = append(card, 'div', '', 'card-body');
+    append(body, 'span', categories[recipe.category], 'category category-' + recipe.category);
+    append(body, 'h2', recipe.title);
+    append(body, 'p', meta(recipe), recipe.draft ? 'draft-mark' : 'meta');
+    append(body, 'p', recipe.cover, 'ingredients-preview');
+    if (recipe.id === 'sushi-sandwich' || recipe.id === 'macaroni-cheese') {
+      append(body, 'p', recipe.prep, 'prep-preview');
+    }
+    const open = append(body, 'a', 'Открыть рецепт', 'button secondary recipe-link');
+    open.id = 'open-' + recipe.id;
+    open.href = '#recipe-' + recipe.id;
+    open.setAttribute('aria-label', 'Открыть рецепт «' + recipe.title + '»');
+  }
+  grid.hidden = matches.length === 0;
+  byId('empty').hidden = matches.length > 0;
+  byId('match-count').textContent = 'Найдено: ' + matches.length;
+}
+
+function renderRecipe(recipe) {
+  recipeView.replaceChildren();
+  const back = append(recipeView, 'a', 'К списку рецептов', 'button secondary');
+  back.href = '#';
+  const intro = append(recipeView, 'div', '', 'recipe-intro');
+  const titleBlock = append(intro, 'div');
+  append(titleBlock, 'span', categories[recipe.category], 'category category-' + recipe.category);
+  const title = append(titleBlock, 'h1', recipe.title);
+  title.tabIndex = -1;
+  append(titleBlock, 'p', meta(recipe), recipe.draft ? 'draft-mark' : 'meta');
+  const figure = append(intro, 'figure');
+  drawArt(figure, recipe);
+  append(figure, 'figcaption', 'Набросок блюда');
+
+  if (recipe.draft) {
+    append(recipeView, 'p', recipe.gap, 'note');
+  } else if (recipe.variants) {
+    for (const variant of recipe.variants) {
+      const section = append(recipeView, 'section', '', 'variant');
+      append(section, 'h2', variant.title);
+      append(section, 'p', variant.equipment.join(' · '), 'meta');
+      renderInstructions(section, variant);
+    }
+  } else {
+    renderInstructions(recipeView, recipe);
+  }
+  const links = append(recipeView, 'div', '', 'detail-links');
+  if (recipe.related) {
+    const related = append(links, 'a', recipe.related[1]);
+    related.href = '#recipe-' + recipe.related[0];
+  }
+  return title;
+}
+
+function renderInstructions(parent, recipe) {
+  const columns = append(parent, 'div', '', 'recipe-columns');
+  const pantry = append(columns, 'section', '', 'panel');
+  append(pantry, 'h2', 'Ингредиенты');
+  const list = append(pantry, 'ul');
+  for (const item of recipe.ingredients) append(list, 'li', item);
+  const method = append(columns, 'section', '', 'panel');
+  append(method, 'h2', 'Как готовить');
+  if (recipe.prep) append(method, 'p', recipe.prep, 'note');
+  const steps = append(method, 'ol');
+  for (const step of recipe.steps) append(steps, 'li', step);
+  if (recipe.gap) append(method, 'p', recipe.gap, 'note');
+  if (recipe.safety) {
+    const note = append(method, 'p', recipe.safety + ' ', 'note');
+    const link = append(note, 'a', 'FoodSafety.gov');
+    link.href = safetyUrl;
+  }
+}
+
+function showRoute() {
+  const recipe = recipes.find((item) => location.hash === '#recipe-' + item.id);
+  catalog.hidden = Boolean(recipe);
+  recipeView.hidden = !recipe;
+  filterToggle.setAttribute('aria-expanded', String(!recipe && !filters.hidden));
+  document.title = recipe ? recipe.title + ' — Книга рецептов' : 'Домашняя книга рецептов';
+  if (recipe) {
+    openedRecipe = recipe.id;
+    renderRecipe(recipe).focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  } else if (openedRecipe) {
+    (byId('open-' + openedRecipe) || byId('catalog-title')).focus();
+    openedRecipe = '';
+  }
+}
+
+populate(ingredient, 'Любой ингредиент', recipes.flatMap((recipe) => recipe.tags));
+populate(equipment, 'Любое оборудование', recipes.flatMap((recipe) => recipe.equipment));
+for (const tab of tabs) {
+  tab.addEventListener('click', () => {
+    category = tab.dataset.category;
+    for (const other of tabs) other.setAttribute('aria-pressed', String(other === tab));
+    renderCatalog();
+  });
+}
+filterToggle.addEventListener('click', () => {
+  const inRecipe = Boolean(openedRecipe);
+  if (inRecipe) {
+    location.hash = '';
+    showRoute();
+  }
+  filters.hidden = !inRecipe && !filters.hidden;
+  filterToggle.setAttribute('aria-expanded', String(!filters.hidden));
+  if (filters.hidden) filters.reset();
+  else query.focus();
+});
+filters.addEventListener('submit', (event) => event.preventDefault());
+query.addEventListener('input', renderCatalog);
+ingredient.addEventListener('change', renderCatalog);
+equipment.addEventListener('change', renderCatalog);
+filters.addEventListener('reset', () => queueMicrotask(renderCatalog));
+window.addEventListener('hashchange', showRoute);
+renderCatalog();
+showRoute();
+</script>
+</body>
+</html>
