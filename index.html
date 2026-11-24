@@ -1216,15 +1216,15 @@ filterToggle.addEventListener('click', () => {
   }
   filters.hidden = !inRecipe && !filters.hidden;
   filterToggle.setAttribute('aria-expanded', String(!filters.hidden));
-  if (filters.hidden) filters.reset();
-  else query.focus();
+  if (!filters.hidden) query.focus();
 });
 filters.addEventListener('submit', (event) => event.preventDefault());
 query.addEventListener('input', renderCatalog);
 ingredient.addEventListener('change', renderCatalog);
 equipment.addEventListener('change', renderCatalog);
 sourceTag.addEventListener('change', renderCatalog);
-filters.addEventListener('reset', () => queueMicrotask(renderCatalog));
+// The reset event fires before the browser restores the form values.
+filters.addEventListener('reset', () => setTimeout(renderCatalog, 0));
 window.addEventListener('hashchange', showRoute);
 renderCatalog();
 showRoute();
